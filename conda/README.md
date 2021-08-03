@@ -19,15 +19,16 @@ docker push pytorch/conda-builder
 ```sh
 # building pytorch
 docker run --rm -it \
+    --shm-size 32g \
+    --memory-swap -1 \
     -e PACKAGE_TYPE=conda \
-    -e DESIRED_CUDA=cu92 \
+    -e DESIRED_CUDA=cpu \
     -e DESIRED_PYTHON=3.8 \
-    -e PYTORCH_BUILD_VERSION=1.5.0 \
+    -e PYTORCH_BUILD_VERSION=1.9.0 \
     -e PYTORCH_BUILD_NUMBER=1 \
-    -e OVERRIDE_PACKAGE_VERSION=1.5.0
     -e TORCH_CONDA_BUILD_FOLDER=pytorch-nightly \
-    -v /path/to/pytorch:/pytorch \
-    -v /path/to/builder:/builder \
+    -v /home/yashchuk/test-conda-build-torch/pytorch/:/pytorch \
+    -v /home/yashchuk/builder:/builder \
     -v "$(pwd):/final_pkgs" \
     -u "$(id -u):$(id -g)"  \
     pytorch/conda-cuda \

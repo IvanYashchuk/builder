@@ -3,6 +3,16 @@ set -ex
 
 export CMAKE_LIBRARY_PATH=$PREFIX/lib:$PREFIX/include:$CMAKE_LIBRARY_PATH
 export CMAKE_PREFIX_PATH=$PREFIX
+# for ARG in $CMAKE_ARGS; do
+#   if [[ "$ARG" == "-DCMAKE_"* ]]; then
+#     cmake_arg=$(echo $ARG | cut -d= -f1)
+#     cmake_arg=$(echo $cmake_arg| cut -dD -f2-)
+#     cmake_val=$(echo $ARG | cut -d= -f2-)
+#     printf -v $cmake_arg "$cmake_val"
+#     export ${cmake_arg}
+#   fi
+# done
+# unset CMAKE_INSTALL_PREFIX
 export TH_BINARY_BUILD=1 # links CPU BLAS libraries thrice in a row (was needed for some MKL static linkage)
 export PYTORCH_BUILD_VERSION=$PKG_VERSION
 export PYTORCH_BUILD_NUMBER=$PKG_BUILDNUM
@@ -54,7 +64,7 @@ if [[ -n "$build_with_cuda" ]]; then
         export TORCH_CUDA_ARCH_LIST="$TORCH_CUDA_ARCH_LIST;6.0;6.1;7.0;7.5;8.0;8.6"
     elif [[ $CUDA_VERSION == 11.3* ]]; then
         export TORCH_CUDA_ARCH_LIST="$TORCH_CUDA_ARCH_LIST;6.0;6.1;7.0;7.5;8.0;8.6"
-	export TORCH_NVCC_FLAGS="-Xfatbin -compress-all --threads 2" 
+	export TORCH_NVCC_FLAGS="-Xfatbin -compress-all --threads 2"
     fi
     export NCCL_ROOT_DIR=/usr/local/cuda
     export USE_STATIC_CUDNN=1 # links cudnn statically (driven by tools/setup_helpers/cudnn.py)

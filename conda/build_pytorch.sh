@@ -256,11 +256,13 @@ if [[ -n "$cpu_only" ]]; then
     fi
     # on Linux, advertise that the package sets the cpuonly feature
     export CONDA_CPU_ONLY_FEATURE="    - cpuonly # [not osx]"
+    export PYTORCH_BUILD_VARIANT="cpu"
 else
     # Switch the CUDA version that /usr/local/cuda points to. This script also
     # sets CUDA_VERSION and CUDNN_VERSION
     echo "Switching to CUDA version $desired_cuda"
     export CONDA_CPU_ONLY_FEATURE=""
+    export PYTORCH_BUILD_VARIANT="cuda"
     . ./switch_cuda_version.sh "$desired_cuda"
     # TODO, simplify after anaconda fixes their cudatoolkit versioning inconsistency.
     # see: https://github.com/conda-forge/conda-forge.github.io/issues/687#issuecomment-460086164
@@ -329,7 +331,7 @@ fi
 # Loop through all Python versions to build a package for each
 for py_ver in "${DESIRED_PYTHON[@]}"; do
     build_string="py${py_ver}_${build_string_suffix}"
-    folder_tag="${build_string}_$(date +'%Y%m%d')"
+    folder_tag="${build_string}_temp$(date +'%Y%m%d')"
 
     # Create the conda package into this temporary folder. This is so we can find
     # the package afterwards, as there's no easy way to extract the final filename
@@ -362,6 +364,7 @@ for py_ver in "${DESIRED_PYTHON[@]}"; do
 
     ADDITIONAL_CHANNELS=""
     echo "Calling conda-build at $(date)"
+    conda config --add channels http://conda.anaconda.org/pytorch
     time CMAKE_ARGS=${CMAKE_ARGS[@]} \
          EXTRA_CAFFE2_CMAKE_FLAGS=${EXTRA_CAFFE2_CMAKE_FLAGS[@]} \
          PYTORCH_GITHUB_ROOT_DIR="$pytorch_rootdir" \
@@ -414,7 +417,7 @@ for py_ver in "${DESIRED_PYTHON[@]}"; do
     # Clean up test folder
     source deactivate
     conda env remove -yn "$test_env"
-    rm -rf "$output_folder"
+    # rm -rf "$output_folder"
 done
 
 # Cleanup the tricks for sccache with conda builds on Windows
