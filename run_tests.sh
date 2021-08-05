@@ -128,6 +128,7 @@ else
     expected_version="${PYTORCH_BUILD_VERSION}"
 fi
 echo "Checking that we are testing the package that is just built"
+python -c "import torch; print(torch.__version__); exit(0)"
 python -c "import torch; exit(0 if torch.__version__ == '$expected_version' else 1)"
 
 # Test that CUDA builds are setup correctly
