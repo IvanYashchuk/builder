@@ -71,7 +71,8 @@ if [[ "$package_type" == conda || "$(uname)" == Darwin ]]; then
     # TODO (maybe): Make the "cpu" package of pytorch depend on "cpuonly"
     if [[ "$cuda_ver" = 'cpu' ]]; then
       # Installing cpuonly will also install dependencies as well
-      retry conda install -y -c pytorch cpuonly=2
+      # TESTING with cpuonly from ivanyashchuk channel
+      retry conda install -y -c pytorch ivanyashchuk::cpuonly
     else
       # Install dependencies from installing the pytorch conda package offline
       retry conda update -yq --all -c defaults -c pytorch -c numba/label/dev
