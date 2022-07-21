@@ -1,6 +1,6 @@
 @setlocal
 
-set MAGMA_VERSION=2.5.4
+set MAGMA_VERSION=2.6.1
 
 set CUVER_NODOT=%CUDA_VERSION%
 set CUVER=%CUVER_NODOT:~0,-1%.%CUVER_NODOT:~-1,1%
@@ -24,7 +24,11 @@ cd magma_cuda%CUVER_NODOT%
 
 if not exist magma (
   :: MAGMA 2.5.4 from http://icl.utk.edu/projectsfiles/magma/downloads/ with applied patches from our magma folder
-  git clone https://github.com/peterjc123/magma.git magma
+  @REM git clone https://github.com/peterjc123/magma.git magma
+  wget http://icl.utk.edu/projectsfiles/magma/downloads/magma-2.6.1.tar.gz
+  tar -xzf magma-2.6.1.tar.gz
+  ren magma-2.6.1 magma
+  for %%f in (%GITHUB_WORKSPACE%\magma\package_files\*.patch) do @git apply --ignore-whitespace --directory=magma %%f
   if errorlevel 1 exit /b 1
 ) else (
   rmdir /S /Q magma\build
